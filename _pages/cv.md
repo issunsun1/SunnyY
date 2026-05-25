@@ -1,6 +1,6 @@
 ---
 layout: archive
-title: "CV"
+title: "About Me"
 permalink: /
 author_profile: true
 redirect_from:
@@ -12,7 +12,7 @@ redirect_from:
 
 Education
 ======
-* M.S. in Jiangnan University, 2025 - 2028(expected)
+* M.S. in Jiangnan University, 2025 - 2028 (expected)
 
 Research Interest
 ======
