@@ -8,7 +8,7 @@
 
   <div class="author__avatar">
     {% if author.avatar contains "://" %}
-    	<img src="{{ author.avatar }}" alt="{{ author.name }}"  fetchpriority="high" />
+    	<img src="{{ author.avatar }}" class="author__avatar-image" alt="{{ author.name }}"  fetchpriority="high" />
     {% else %}
       {% assign avatar_first_char = author.avatar | slice: 0, 1 %}
       {% if avatar_first_char == "/" %}
@@ -18,7 +18,7 @@
       {% else %}
         {% assign avatar_src = author.avatar | prepend: "/images/" | relative_url %}
       {% endif %}
-    	<img src="{{ avatar_src }}" class="author__avatar" alt="{{ author.name }}"  fetchpriority="high" />
+    	<img src="{{ avatar_src }}" class="author__avatar-image" alt="{{ author.name }}"  fetchpriority="high" />
     {% endif %}
   </div>
 
