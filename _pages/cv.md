@@ -10,13 +10,26 @@ redirect_from:
 
 {% include base_path %}
 
+Hi, I'm Sun Yi, a first-year master's student at the School of Artificial Intelligence and Computer Science, Jiangnan University.
+
+My supervisor is Associate Professor Tianyang Xu.
+[![Google Scholar](https://img.shields.io/badge/Google%20Scholar-Tianyang%20Xu-4285F4?logo=google-scholar&logoColor=white)](https://scholar.google.com/citations?hl=en&user=bbSNrAgAAAAJ)
+[![Homepage](https://img.shields.io/badge/Homepage-xu--tianyang.github.io-0A66C2?logo=githubpages&logoColor=white)](https://xu-tianyang.github.io/)
+
+I am interested in artificial intelligence and computer science, especially multimodal learning and vision-language understanding. During my graduate studies, I hope to strengthen my research ability, deepen my technical foundation, and keep learning through academic discussion and hands-on experimentation.
+
+Research Interests
+======
+* Multimodal Large Language Models (MLLMs)
+* Vision-Language Models (VLMs)
+* Position Encoding
+* Visual Question Answering (VQA)
+
 Education
 ======
-* M.S. in Jiangnan University, 2025 - 2028 (expected)
+* M.S., Jiangnan University, 2025 - 2028 (expected)
 
-Research Interest
-======
-* MLLMs, VLM, Position Encoding, VQA
+
 
 <!-- Skills
 ======
