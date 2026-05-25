@@ -1,5 +1,5 @@
 ---
-title: "Paper Collection Summary"
+title: ""
 date: 2026-05-25
 excerpt: "Auto-generated summary of papers organized by topic."
 ---
