@@ -1,3 +1,9 @@
+---
+title: "Paper Collection Summary"
+date: 2026-05-25
+excerpt: "Auto-generated summary of papers organized by topic."
+---
+
 # 📚 Paper Collection Summary
 
 > Auto-generated summary of all papers in this repository, organized by **topic**.

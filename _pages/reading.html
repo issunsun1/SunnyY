@@ -7,11 +7,14 @@ author_profile: true
 
 {% include base_path %}
 
-{% assign reading_items = site.reading | sort: "date" | reverse %}
+{% assign reading_items = site.reading | sort: "title" %}
 
 {% if reading_items.size > 0 %}
   {% for post in reading_items %}
-    {% include archive-single.html %}
+    <article class="reading__item">
+      <h2>{{ post.title | default: post.basename }}</h2>
+      {{ post.content }}
+    </article>
   {% endfor %}
 {% else %}
   <p>No reading notes have been added yet.</p>
