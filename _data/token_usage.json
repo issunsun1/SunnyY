@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-13 19:19 CST",
+ "generated_at": "2026-09-13 19:57 CST",
  "timezone": "CST",
  "window_days": 365,
  "start_date": "2025-09-14",
@@ -8,15 +8,15 @@
  "last_activity": "2026-09-13",
  "has_data": true,
  "totals": {
-  "total": 987843093,
-  "compact": "988M",
-  "window_total": 987843093,
-  "window_compact": "988M",
-  "turns": 11473,
-  "active_days": 80,
-  "sessions": 236,
-  "daily_average": 12348039,
-  "daily_average_compact": "12.3M"
+  "total": 1851322949,
+  "compact": "1.9B",
+  "window_total": 1851322949,
+  "window_compact": "1.9B",
+  "turns": 11535,
+  "active_days": 131,
+  "sessions": 432,
+  "daily_average": 14132236,
+  "daily_average_compact": "14.1M"
  },
  "busiest": {
   "date": "2026-08-09",
@@ -24,26 +24,32 @@
   "compact": "190M"
  },
  "streak": {
-  "longest": 11,
+  "longest": 25,
   "current": 2
+ },
+ "indexed": {
+  "sessions": 193,
+  "total": 856519890,
+  "compact": "857M",
+  "split_sessions": 24
  },
  "remote": {
   "claude_sessions": 10,
   "claude_counted": 0,
   "claude_tokens": 0,
-  "codex_threads": 269,
+  "codex_threads": 278,
   "codex_cloud_threads": 178,
-  "codex_ssh_threads": 91,
+  "codex_ssh_threads": 100,
   "codex_counted": 0,
   "codex_tokens": 0,
   "counted": 0,
-  "untracked": 279,
+  "untracked": 288,
   "complete": false
  },
  "thresholds": [
-  2067899,
-  6563595,
-  13672769,
+  2546168,
+  7206900,
+  19220940,
   189567580
  ],
  "weekday_labels": [
@@ -946,14 +952,14 @@
      "label": "Jan 9, 2026",
      "total": 7206900,
      "compact": "7.2M",
-     "level": 3
+     "level": 2
     },
     {
      "date": "2026-01-10",
      "label": "Jan 10, 2026",
      "total": 14459695,
      "compact": "14.5M",
-     "level": 4
+     "level": 3
     }
    ]
   },
@@ -978,7 +984,7 @@
      "label": "Jan 13, 2026",
      "total": 7021685,
      "compact": "7.0M",
-     "level": 3
+     "level": 2
     },
     {
      "date": "2026-01-14",
@@ -1098,21 +1104,21 @@
      "label": "Jan 29, 2026",
      "total": 15019557,
      "compact": "15.0M",
-     "level": 4
+     "level": 3
     },
     {
      "date": "2026-01-30",
      "label": "Jan 30, 2026",
      "total": 14974536,
      "compact": "15.0M",
-     "level": 4
+     "level": 3
     },
     {
      "date": "2026-01-31",
      "label": "Jan 31, 2026",
      "total": 15510634,
      "compact": "15.5M",
-     "level": 4
+     "level": 3
     }
    ]
   },
@@ -1135,16 +1141,16 @@
     {
      "date": "2026-02-03",
      "label": "Feb 3, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 12706291,
+     "compact": "12.7M",
+     "level": 3
     },
     {
      "date": "2026-02-04",
      "label": "Feb 4, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 5055709,
+     "compact": "5.1M",
+     "level": 2
     },
     {
      "date": "2026-02-05",
@@ -1156,16 +1162,16 @@
     {
      "date": "2026-02-06",
      "label": "Feb 6, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 39585343,
+     "compact": "39.6M",
+     "level": 4
     },
     {
      "date": "2026-02-07",
      "label": "Feb 7, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 1153496,
+     "compact": "1.2M",
+     "level": 1
     }
    ]
   },
@@ -1181,16 +1187,16 @@
     {
      "date": "2026-02-09",
      "label": "Feb 9, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 218184,
+     "compact": "218K",
+     "level": 1
     },
     {
      "date": "2026-02-10",
      "label": "Feb 10, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 1184737,
+     "compact": "1.2M",
+     "level": 1
     },
     {
      "date": "2026-02-11",
@@ -1333,9 +1339,9 @@
     {
      "date": "2026-03-01",
      "label": "Mar 1, 2026",
-     "total": 590290,
-     "compact": "590K",
-     "level": 1
+     "total": 26949153,
+     "compact": "26.9M",
+     "level": 4
     },
     {
      "date": "2026-03-02",
@@ -1347,9 +1353,9 @@
     {
      "date": "2026-03-03",
      "label": "Mar 3, 2026",
-     "total": 1365116,
-     "compact": "1.4M",
-     "level": 1
+     "total": 3216918,
+     "compact": "3.2M",
+     "level": 2
     },
     {
      "date": "2026-03-04",
@@ -1361,23 +1367,23 @@
     {
      "date": "2026-03-05",
      "label": "Mar 5, 2026",
-     "total": 5386858,
-     "compact": "5.4M",
-     "level": 2
+     "total": 25395347,
+     "compact": "25.4M",
+     "level": 4
     },
     {
      "date": "2026-03-06",
      "label": "Mar 6, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 983115,
+     "compact": "983K",
+     "level": 1
     },
     {
      "date": "2026-03-07",
      "label": "Mar 7, 2026",
-     "total": 1868564,
-     "compact": "1.9M",
-     "level": 1
+     "total": 3009045,
+     "compact": "3.0M",
+     "level": 2
     }
    ]
   },
@@ -1386,37 +1392,37 @@
     {
      "date": "2026-03-08",
      "label": "Mar 8, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 23527915,
+     "compact": "23.5M",
+     "level": 4
     },
     {
      "date": "2026-03-09",
      "label": "Mar 9, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 11843086,
+     "compact": "11.8M",
+     "level": 3
     },
     {
      "date": "2026-03-10",
      "label": "Mar 10, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 1019703,
+     "compact": "1.0M",
+     "level": 1
     },
     {
      "date": "2026-03-11",
      "label": "Mar 11, 2026",
      "total": 14994386,
      "compact": "15.0M",
-     "level": 4
+     "level": 3
     },
     {
      "date": "2026-03-12",
      "label": "Mar 12, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 5384034,
+     "compact": "5.4M",
+     "level": 2
     },
     {
      "date": "2026-03-13",
@@ -1428,8 +1434,8 @@
     {
      "date": "2026-03-14",
      "label": "Mar 14, 2026",
-     "total": 9583483,
-     "compact": "9.6M",
+     "total": 13236161,
+     "compact": "13.2M",
      "level": 3
     }
    ]
@@ -1446,23 +1452,23 @@
     {
      "date": "2026-03-16",
      "label": "Mar 16, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 484730,
+     "compact": "485K",
+     "level": 1
     },
     {
      "date": "2026-03-17",
      "label": "Mar 17, 2026",
-     "total": 2067899,
-     "compact": "2.1M",
-     "level": 1
+     "total": 19331890,
+     "compact": "19.3M",
+     "level": 4
     },
     {
      "date": "2026-03-18",
      "label": "Mar 18, 2026",
      "total": 6947382,
      "compact": "6.9M",
-     "level": 3
+     "level": 2
     },
     {
      "date": "2026-03-19",
@@ -1474,16 +1480,16 @@
     {
      "date": "2026-03-20",
      "label": "Mar 20, 2026",
-     "total": 6582499,
-     "compact": "6.6M",
-     "level": 3
+     "total": 31611363,
+     "compact": "31.6M",
+     "level": 4
     },
     {
      "date": "2026-03-21",
      "label": "Mar 21, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 78847,
+     "compact": "78.8K",
+     "level": 1
     }
    ]
   },
@@ -1499,9 +1505,9 @@
     {
      "date": "2026-03-23",
      "label": "Mar 23, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 62541,
+     "compact": "62.5K",
+     "level": 1
     },
     {
      "date": "2026-03-24",
@@ -1513,30 +1519,30 @@
     {
      "date": "2026-03-25",
      "label": "Mar 25, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 20740796,
+     "compact": "20.7M",
+     "level": 4
     },
     {
      "date": "2026-03-26",
      "label": "Mar 26, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 15518318,
+     "compact": "15.5M",
+     "level": 3
     },
     {
      "date": "2026-03-27",
      "label": "Mar 27, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 7131019,
+     "compact": "7.1M",
+     "level": 2
     },
     {
      "date": "2026-03-28",
      "label": "Mar 28, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 7951407,
+     "compact": "8.0M",
+     "level": 3
     }
    ]
   },
@@ -1552,23 +1558,23 @@
     {
      "date": "2026-03-30",
      "label": "Mar 30, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 5481450,
+     "compact": "5.5M",
+     "level": 2
     },
     {
      "date": "2026-03-31",
      "label": "Mar 31, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 2715795,
+     "compact": "2.7M",
+     "level": 2
     },
     {
      "date": "2026-04-01",
      "label": "Apr 1, 2026",
-     "total": 13672769,
-     "compact": "13.7M",
-     "level": 3
+     "total": 20226448,
+     "compact": "20.2M",
+     "level": 4
     },
     {
      "date": "2026-04-02",
@@ -1587,9 +1593,9 @@
     {
      "date": "2026-04-04",
      "label": "Apr 4, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 5495004,
+     "compact": "5.5M",
+     "level": 2
     }
    ]
   },
@@ -1598,51 +1604,51 @@
     {
      "date": "2026-04-05",
      "label": "Apr 5, 2026",
-     "total": 24123150,
-     "compact": "24.1M",
+     "total": 24263109,
+     "compact": "24.3M",
      "level": 4
     },
     {
      "date": "2026-04-06",
      "label": "Apr 6, 2026",
-     "total": 11758642,
-     "compact": "11.8M",
-     "level": 3
+     "total": 30646894,
+     "compact": "30.6M",
+     "level": 4
     },
     {
      "date": "2026-04-07",
      "label": "Apr 7, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 546254,
+     "compact": "546K",
+     "level": 1
     },
     {
      "date": "2026-04-08",
      "label": "Apr 8, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 6555411,
+     "compact": "6.6M",
+     "level": 2
     },
     {
      "date": "2026-04-09",
      "label": "Apr 9, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 41020903,
+     "compact": "41.0M",
+     "level": 4
     },
     {
      "date": "2026-04-10",
      "label": "Apr 10, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 30900725,
+     "compact": "30.9M",
+     "level": 4
     },
     {
      "date": "2026-04-11",
      "label": "Apr 11, 2026",
-     "total": 12765067,
-     "compact": "12.8M",
-     "level": 3
+     "total": 20773023,
+     "compact": "20.8M",
+     "level": 4
     }
    ]
   },
@@ -1651,51 +1657,51 @@
     {
      "date": "2026-04-12",
      "label": "Apr 12, 2026",
-     "total": 140030,
-     "compact": "140K",
-     "level": 1
+     "total": 19220940,
+     "compact": "19.2M",
+     "level": 3
     },
     {
      "date": "2026-04-13",
      "label": "Apr 13, 2026",
-     "total": 2611079,
-     "compact": "2.6M",
-     "level": 2
+     "total": 8845630,
+     "compact": "8.8M",
+     "level": 3
     },
     {
      "date": "2026-04-14",
      "label": "Apr 14, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 14904101,
+     "compact": "14.9M",
+     "level": 3
     },
     {
      "date": "2026-04-15",
      "label": "Apr 15, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 10815071,
+     "compact": "10.8M",
+     "level": 3
     },
     {
      "date": "2026-04-16",
      "label": "Apr 16, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 32201226,
+     "compact": "32.2M",
+     "level": 4
     },
     {
      "date": "2026-04-17",
      "label": "Apr 17, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 24277970,
+     "compact": "24.3M",
+     "level": 4
     },
     {
      "date": "2026-04-18",
      "label": "Apr 18, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 2889530,
+     "compact": "2.9M",
+     "level": 2
     }
    ]
   },
@@ -1704,37 +1710,37 @@
     {
      "date": "2026-04-19",
      "label": "Apr 19, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 2832822,
+     "compact": "2.8M",
+     "level": 2
     },
     {
      "date": "2026-04-20",
      "label": "Apr 20, 2026",
-     "total": 623329,
-     "compact": "623K",
-     "level": 1
+     "total": 28947813,
+     "compact": "28.9M",
+     "level": 4
     },
     {
      "date": "2026-04-21",
      "label": "Apr 21, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 2306810,
+     "compact": "2.3M",
+     "level": 1
     },
     {
      "date": "2026-04-22",
      "label": "Apr 22, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 13660123,
+     "compact": "13.7M",
+     "level": 3
     },
     {
      "date": "2026-04-23",
      "label": "Apr 23, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 2916432,
+     "compact": "2.9M",
+     "level": 2
     },
     {
      "date": "2026-04-24",
@@ -1746,9 +1752,9 @@
     {
      "date": "2026-04-25",
      "label": "Apr 25, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 13397543,
+     "compact": "13.4M",
+     "level": 3
     }
    ]
   },
@@ -1757,16 +1763,16 @@
     {
      "date": "2026-04-26",
      "label": "Apr 26, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 25052193,
+     "compact": "25.1M",
+     "level": 4
     },
     {
      "date": "2026-04-27",
      "label": "Apr 27, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 926351,
+     "compact": "926K",
+     "level": 1
     },
     {
      "date": "2026-04-28",
@@ -1785,9 +1791,9 @@
     {
      "date": "2026-04-30",
      "label": "Apr 30, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 59436565,
+     "compact": "59.4M",
+     "level": 4
     },
     {
      "date": "2026-05-01",
@@ -1810,9 +1816,9 @@
     {
      "date": "2026-05-03",
      "label": "May 3, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 266179,
+     "compact": "266K",
+     "level": 1
     },
     {
      "date": "2026-05-04",
@@ -1877,37 +1883,37 @@
     {
      "date": "2026-05-12",
      "label": "May 12, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 445794,
+     "compact": "446K",
+     "level": 1
     },
     {
      "date": "2026-05-13",
      "label": "May 13, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 42717522,
+     "compact": "42.7M",
+     "level": 4
     },
     {
      "date": "2026-05-14",
      "label": "May 14, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 37246582,
+     "compact": "37.2M",
+     "level": 4
     },
     {
      "date": "2026-05-15",
      "label": "May 15, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 14961434,
+     "compact": "15.0M",
+     "level": 3
     },
     {
      "date": "2026-05-16",
      "label": "May 16, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 5777586,
+     "compact": "5.8M",
+     "level": 2
     }
    ]
   },
@@ -1930,30 +1936,30 @@
     {
      "date": "2026-05-19",
      "label": "May 19, 2026",
-     "total": 247413,
-     "compact": "247K",
-     "level": 1
+     "total": 6024999,
+     "compact": "6.0M",
+     "level": 2
     },
     {
      "date": "2026-05-20",
      "label": "May 20, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 632785,
+     "compact": "633K",
+     "level": 1
     },
     {
      "date": "2026-05-21",
      "label": "May 21, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 979195,
+     "compact": "979K",
+     "level": 1
     },
     {
      "date": "2026-05-22",
      "label": "May 22, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 8932385,
+     "compact": "8.9M",
+     "level": 3
     },
     {
      "date": "2026-05-23",
@@ -1976,8 +1982,8 @@
     {
      "date": "2026-05-25",
      "label": "May 25, 2026",
-     "total": 8743579,
-     "compact": "8.7M",
+     "total": 10121714,
+     "compact": "10.1M",
      "level": 3
     },
     {
@@ -1997,22 +2003,22 @@
     {
      "date": "2026-05-28",
      "label": "May 28, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 8932386,
+     "compact": "8.9M",
+     "level": 3
     },
     {
      "date": "2026-05-29",
      "label": "May 29, 2026",
-     "total": 1296778,
-     "compact": "1.3M",
-     "level": 1
+     "total": 16841106,
+     "compact": "16.8M",
+     "level": 3
     },
     {
      "date": "2026-05-30",
      "label": "May 30, 2026",
-     "total": 5070189,
-     "compact": "5.1M",
+     "total": 6706985,
+     "compact": "6.7M",
      "level": 2
     }
    ]
@@ -2024,7 +2030,7 @@
      "label": "May 31, 2026",
      "total": 2433095,
      "compact": "2.4M",
-     "level": 2
+     "level": 1
     },
     {
      "date": "2026-06-01",
@@ -2036,37 +2042,37 @@
     {
      "date": "2026-06-02",
      "label": "Jun 2, 2026",
-     "total": 9375632,
-     "compact": "9.4M",
+     "total": 11283480,
+     "compact": "11.3M",
      "level": 3
     },
     {
      "date": "2026-06-03",
      "label": "Jun 3, 2026",
-     "total": 4645379,
-     "compact": "4.6M",
+     "total": 7161001,
+     "compact": "7.2M",
      "level": 2
     },
     {
      "date": "2026-06-04",
      "label": "Jun 4, 2026",
-     "total": 7379830,
-     "compact": "7.4M",
+     "total": 8590224,
+     "compact": "8.6M",
      "level": 3
     },
     {
      "date": "2026-06-05",
      "label": "Jun 5, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 5541590,
+     "compact": "5.5M",
+     "level": 2
     },
     {
      "date": "2026-06-06",
      "label": "Jun 6, 2026",
-     "total": 3939356,
-     "compact": "3.9M",
-     "level": 2
+     "total": 67632203,
+     "compact": "67.6M",
+     "level": 4
     }
    ]
   },
@@ -2082,9 +2088,9 @@
     {
      "date": "2026-06-08",
      "label": "Jun 8, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 375349,
+     "compact": "375K",
+     "level": 1
     },
     {
      "date": "2026-06-09",
@@ -2096,9 +2102,9 @@
     {
      "date": "2026-06-10",
      "label": "Jun 10, 2026",
-     "total": 0,
-     "compact": "0",
-     "level": 0
+     "total": 551038,
+     "compact": "551K",
+     "level": 1
     },
     {
      "date": "2026-06-11",
@@ -2165,7 +2171,7 @@
      "label": "Jun 19, 2026",
      "total": 2477446,
      "compact": "2.5M",
-     "level": 2
+     "level": 1
     },
     {
      "date": "2026-06-20",
@@ -2536,7 +2542,7 @@
      "label": "Aug 7, 2026",
      "total": 2546168,
      "compact": "2.5M",
-     "level": 2
+     "level": 1
     },
     {
      "date": "2026-08-08",
@@ -2649,7 +2655,7 @@
      "label": "Aug 22, 2026",
      "total": 16713474,
      "compact": "16.7M",
-     "level": 4
+     "level": 3
     }
    ]
   },
@@ -2688,7 +2694,7 @@
      "label": "Aug 27, 2026",
      "total": 18937195,
      "compact": "18.9M",
-     "level": 4
+     "level": 3
     },
     {
      "date": "2026-08-28",
@@ -2702,7 +2708,7 @@
      "label": "Aug 29, 2026",
      "total": 18719192,
      "compact": "18.7M",
-     "level": 4
+     "level": 3
     }
    ]
   },
@@ -2720,7 +2726,7 @@
      "label": "Aug 31, 2026",
      "total": 6630539,
      "compact": "6.6M",
-     "level": 3
+     "level": 2
     },
     {
      "date": "2026-09-01",
@@ -2817,8 +2823,8 @@
     {
      "date": "2026-09-13",
      "label": "Sep 13, 2026",
-     "total": 27404418,
-     "compact": "27.4M",
+     "total": 34364384,
+     "compact": "34.4M",
      "level": 4
     }
    ]
@@ -2881,19 +2887,19 @@
  "sources": [
   {
    "name": "Claude Code",
-   "total": 26841461,
-   "compact": "26.8M",
-   "turns": 162,
-   "sessions": 1,
-   "share": 2.7
+   "total": 32008070,
+   "compact": "32.0M",
+   "turns": 187,
+   "sessions": 2,
+   "share": 1.7
   },
   {
    "name": "Codex",
-   "total": 961001632,
-   "compact": "961M",
-   "turns": 11311,
-   "sessions": 235,
-   "share": 97.3
+   "total": 1819314879,
+   "compact": "1.8B",
+   "turns": 11348,
+   "sessions": 430,
+   "share": 98.3
   }
  ]
 }

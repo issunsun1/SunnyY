@@ -87,6 +87,7 @@ transcripts two agents keep on this machine:
 | --- | --- |
 | Claude Code | `~/.claude/projects/<project>/<session>.jsonl` |
 | Codex | `~/.codex/sessions/**/rollout-*.jsonl` and `~/.codex/archived_sessions/rollout-*.jsonl` |
+| Codex thread index | `~/.codex/**/state_*.sqlite`, for threads whose rollout is gone |
 
 Regenerate the data with:
 
@@ -109,6 +110,24 @@ Counting differs per agent, which the script handles:
   the script takes the increase between consecutive `token_count` events, and
   starts a fresh cycle when a session restarts its counter.
 
+## Codex threads without a transcript
+
+Codex prunes old rollouts, but its thread index keeps a `tokens_used` total for
+every thread it has run - including an index left behind by an earlier release
+at `~/.codex/sqlite/state_5.sqlite`, which still lists threads from before the
+current one existed. Where a rollout survives, the index total matches it, so
+the script reads the index for every thread it found no rollout for and folds
+that usage into the Codex figures:
+
+- a thread with a rollout is always read from the rollout, and a thread listed
+  in several index databases is counted once, at its largest total
+- the index has no per-turn detail, so these threads add sessions and tokens
+  but no turns, and a thread's total lands on its last active day - or is split
+  evenly between its first and last day when it ran across several
+
+The recovered share is stored as `indexed` in the JSON and noted under the
+calendar.
+
 ## Remote sessions
 
 Claude Code files an SSH session under `~/.claude/projects/ssh-<id>/` like any
@@ -120,7 +139,7 @@ that ran it. The script reports what it could not reach:
 ```
 remote sessions:
   Claude Code  10 SSH session(s), 0 with usage recorded here
-  Codex        269 remote thread(s) (178 cloud, 91 ssh), 0 with a transcript here
+  Codex        278 remote thread(s) (178 cloud, 100 ssh), 0 with usage recorded here
 ```
 
 To fold that usage in, copy the remote transcripts down and point

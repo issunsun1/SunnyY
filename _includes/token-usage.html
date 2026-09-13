@@ -64,7 +64,7 @@ prompts, file paths, or project names are published.
 </div>
 
 <p class="tk-note">
-Generated {{ tk.generated_at }} from {{ tk.totals.sessions }} session transcripts ({% for source in tk.sources %}{% unless forloop.first %}, {% endunless %}{{ source.sessions }} {{ source.name }}{% endfor %}) by <code>scripts/token_usage.py</code>.{% if tk.remote.untracked > 0 %} A further {{ tk.remote.untracked }} remote sessions keep their transcripts on other machines and are not counted.{% endif %}
+Generated {{ tk.generated_at }} from {{ tk.totals.sessions }} sessions ({% for source in tk.sources %}{% unless forloop.first %}, {% endunless %}{{ source.sessions }} {{ source.name }}{% endfor %}) by <code>scripts/token_usage.py</code>.{% if tk.indexed.sessions > 0 %} {{ tk.indexed.sessions }} of the Codex sessions no longer have a transcript on disk; their {{ tk.indexed.compact }} tokens come from the per-thread totals in Codex&rsquo;s thread index, placed on each thread&rsquo;s first and last active day.{% endif %}{% if tk.remote.untracked > 0 %} A further {{ tk.remote.untracked }} remote sessions keep their transcripts on other machines and are not counted.{% endif %}
 </p>
 </section>
 {%- endif -%}

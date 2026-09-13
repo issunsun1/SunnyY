@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """Aggregate local AI coding-agent token usage into _data/token_usage.json.
 
-Two agents keep transcripts on this machine and both record what they billed:
+Two agents keep records on this machine and both record what they billed:
 
   Claude Code  ~/.claude/projects/<project>/<session>.jsonl
                every assistant record carries a `message.usage` block.
   Codex        ~/.codex/sessions/<y>/<m>/<d>/rollout-*.jsonl and
                ~/.codex/archived_sessions/rollout-*.jsonl
                `token_count` events carry a running `total_token_usage`.
+               ~/.codex/**/state_*.sqlite
+               the thread index keeps a `tokens_used` total per thread, which
+               outlives the rollout once a session is pruned or deleted.
 
-Both are walked, bucketed by local calendar day, and consolidated into a single
+All of it is bucketed by local calendar day and consolidated into a single
 series that the Jekyll templates render as a GitHub-style contribution heatmap.
 
 Remote work counts too, as far as it can. Claude Code files an SSH session
@@ -220,6 +223,77 @@ def session_id_from(path):
     return match.group(1) if match else None
 
 
+def codex_thread_index(roots):
+    """Per-thread token totals from Codex's thread index.
+
+    Codex indexes every thread it runs in a `state_<n>.sqlite` database, with
+    a running `tokens_used` total on each row. The row outlives the rollout: a
+    pruned or deleted session keeps it, and an index left behind by an earlier
+    Codex release (`sqlite/state_5.sqlite`) still lists threads whose rollouts
+    are long gone. Where a rollout survives, the two agree on the total, so the
+    index is how usage from those missing transcripts is retrieved.
+
+    Returns {thread_id: (tokens, created_at, updated_at)}, keeping the larger
+    total when a thread is indexed in more than one database.
+    """
+    threads = {}
+    for root in roots:
+        root = Path(root)
+        if not root.exists():
+            continue
+        for db in sorted(root.rglob("state_*.sqlite")):
+            try:
+                connection = sqlite3.connect(db.resolve().as_uri() + "?immutable=1", uri=True)
+            except sqlite3.Error:
+                continue
+            try:
+                rows = connection.execute(
+                    "select id, tokens_used, created_at, updated_at from threads").fetchall()
+            except sqlite3.Error:
+                rows = []
+            finally:
+                connection.close()
+            for thread_id, tokens, created, updated in rows:
+                tokens = int(tokens or 0)
+                if not thread_id or tokens <= 0:
+                    continue
+                previous = threads.get(thread_id)
+                if previous is None or tokens > previous[0]:
+                    threads[thread_id] = (tokens, created, updated)
+    return threads
+
+
+def iter_codex_index_usage(threads, transcribed, tz):
+    """Yield (local_datetime, tokens, thread_id) for indexed threads with no rollout.
+
+    A thread whose rollout was scanned is skipped: the transcript is read turn
+    by turn and is the better record. For the rest only the first and last
+    activity survive, so the total goes on those days - all of it when the
+    thread ran within one day, split evenly between the two otherwise. That
+    marks only days the thread is known to have been active, instead of
+    spreading usage over days in between that may have had none.
+    """
+    for thread_id, (tokens, created, updated) in sorted(threads.items()):
+        if thread_id in transcribed:
+            continue
+        stamps = []
+        for value in (created, updated):
+            if not value:
+                continue
+            # Newer index schemas also carry millisecond columns; accept either.
+            if value > 1e11:
+                value = value / 1000.0
+            stamps.append(datetime.fromtimestamp(value, tz))
+        if not stamps:
+            continue
+        first, last = min(stamps), max(stamps)
+        if first.date() == last.date():
+            yield last, tokens, thread_id
+        else:
+            yield first, tokens // 2, thread_id
+            yield last, tokens - tokens // 2, thread_id
+
+
 def codex_remote_threads(codex_home):
     """Thread ids Codex has seen on a remote host or in the cloud.
 
@@ -294,14 +368,15 @@ def level_for(value, cuts):
     return 4
 
 
-def remote_coverage(claude_paths, codex_paths, codex_roots, per_file):
+def remote_coverage(claude_paths, codex_paths, codex_roots, per_file, indexed_ids=()):
     """Account for the remote work this machine knows about.
 
     Claude Code writes an SSH session into `projects/ssh-<id>/`, so those are
     already in the numbers above and only need counting. Codex catalogues its
     remote and cloud threads by title alone, so a thread is covered only if its
-    rollout turned up in one of the scanned roots - which is what happens when
-    `--extra-source` points at a copy of the remote host's transcripts.
+    usage turned up in one of the scanned roots - as a rollout, which is what
+    happens when `--extra-source` points at a copy of the remote host's
+    transcripts, or as a row in a scanned thread index.
     """
     claude_remote = claude_counted = claude_tokens = 0
     for path in claude_paths:
@@ -318,19 +393,25 @@ def remote_coverage(claude_paths, codex_paths, codex_roots, per_file):
         session_id = session_id_from(path)
         if session_id:
             scanned_ids[session_id] = per_file.get(str(path), 0)
+    for thread_id in indexed_ids:
+        scanned_ids.setdefault(thread_id, per_file.get(thread_id, 0))
+
+    # Roots may share a catalogue, so threads are keyed by id before counting.
+    remote_threads = {}
+    for root in codex_roots:
+        remote_threads.update(codex_remote_threads(root))
 
     codex_remote = codex_counted = codex_tokens = 0
     cloud = ssh = 0
-    for root in codex_roots:
-        for thread_id, kind in codex_remote_threads(root).items():
-            codex_remote += 1
-            if kind == "cloud":
-                cloud += 1
-            else:
-                ssh += 1
-            if thread_id in scanned_ids:
-                codex_counted += 1
-                codex_tokens += scanned_ids[thread_id]
+    for thread_id, kind in remote_threads.items():
+        codex_remote += 1
+        if kind == "cloud":
+            cloud += 1
+        else:
+            ssh += 1
+        if thread_id in scanned_ids:
+            codex_counted += 1
+            codex_tokens += scanned_ids[thread_id]
 
     untracked = (claude_remote - claude_counted) + (codex_remote - codex_counted)
     return {
@@ -378,40 +459,55 @@ def build(claude_roots, codex_roots, days, tz, today):
 
     claude_paths = gather_transcripts(claude_roots, claude_transcripts)
     codex_paths = gather_transcripts(codex_roots, codex_transcripts, key=session_id_from)
+    transcribed = {session_id_from(path) for path in codex_paths} - {None}
+    thread_index = codex_thread_index(codex_roots)
 
-    readers = [("Claude Code", iter_claude_usage, claude_paths),
-               ("Codex", iter_codex_usage, codex_paths)]
+    # The thread index reports a total per thread, not per turn, so its rows
+    # add sessions and tokens to Codex but no turns.
+    readers = [("Claude Code", iter_claude_usage(claude_paths, tz), True),
+               ("Codex", iter_codex_usage(codex_paths, tz), True),
+               ("Codex", iter_codex_index_usage(thread_index, transcribed, tz), False)]
 
-    for name, reader, paths in readers:
+    by_name = {}
+    indexed_ids = set()
+    indexed_total = indexed_split = 0
+    for name, usage, per_turn in readers:
         subtotal = turns = 0
-        files = set()
-        for stamp, tokens, path in reader(paths, tz):
+        origins = defaultdict(int)
+        for stamp, tokens, origin in usage:
             daily[stamp.date().isoformat()] += tokens
-            per_file[str(path)] += tokens
+            per_file[str(origin)] += tokens
             subtotal += tokens
             turns += 1
-            files.add(path)
+            origins[origin] += 1
             if first_seen is None or stamp < first_seen:
                 first_seen = stamp
             if last_seen is None or stamp > last_seen:
                 last_seen = stamp
+        if not per_turn:
+            turns = 0
+            indexed_ids = set(origins)
+            indexed_total = subtotal
+            indexed_split = sum(1 for count in origins.values() if count > 1)
         if subtotal <= 0:
             continue
         grand_total += subtotal
         total_turns += turns
-        total_sessions += len(files)
-        sources.append({
-            "name": name,
-            "total": subtotal,
-            "compact": compact(subtotal),
-            "turns": turns,
-            "sessions": len(files),
-        })
+        total_sessions += len(origins)
+        entry = by_name.get(name)
+        if entry is None:
+            entry = by_name[name] = {"name": name, "total": 0, "compact": "0",
+                                     "turns": 0, "sessions": 0}
+            sources.append(entry)
+        entry["total"] += subtotal
+        entry["turns"] += turns
+        entry["sessions"] += len(origins)
 
     for entry in sources:
+        entry["compact"] = compact(entry["total"])
         entry["share"] = round(100.0 * entry["total"] / grand_total, 1) if grand_total else 0.0
 
-    coverage = remote_coverage(claude_paths, codex_paths, codex_roots, per_file)
+    coverage = remote_coverage(claude_paths, codex_paths, codex_roots, per_file, indexed_ids)
 
     # The grid always ends on today and starts on a Sunday so the columns line
     # up as whole weeks.
@@ -490,6 +586,12 @@ def build(claude_roots, codex_roots, days, tz, today):
             "compact": compact(in_window[busiest_key]) if busiest_key else "0",
         },
         "streak": {"longest": longest, "current": current},
+        "indexed": {
+            "sessions": len(indexed_ids),
+            "total": indexed_total,
+            "compact": compact(indexed_total),
+            "split_sessions": indexed_split,
+        },
         "remote": coverage,
         "thresholds": cuts,
         "weekday_labels": WEEKDAY_LABELS,
@@ -558,11 +660,18 @@ def main():
     print("  {:<12} {:>8} over {} active day(s)".format(
         "combined", payload["totals"]["compact"], payload["totals"]["active_days"]))
 
+    indexed = payload["indexed"]
+    if indexed["sessions"]:
+        print("thread index:")
+        print("  Codex        {} over {} thread(s) with no rollout left on disk, "
+              "{} split across first and last day".format(
+                  indexed["compact"], indexed["sessions"], indexed["split_sessions"]))
+
     remote = payload["remote"]
     print("remote sessions:")
     print("  Claude Code  {} SSH session(s), {} with usage recorded here".format(
         remote["claude_sessions"], remote["claude_counted"]))
-    print("  Codex        {} remote thread(s) ({} cloud, {} ssh), {} with a transcript here".format(
+    print("  Codex        {} remote thread(s) ({} cloud, {} ssh), {} with usage recorded here".format(
         remote["codex_threads"], remote["codex_cloud_threads"],
         remote["codex_ssh_threads"], remote["codex_counted"]))
     if remote["untracked"]:
