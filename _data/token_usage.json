@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-09-13 19:07 CST",
+ "generated_at": "2026-09-13 19:19 CST",
  "timezone": "CST",
  "window_days": 365,
  "start_date": "2025-09-14",
@@ -8,15 +8,15 @@
  "last_activity": "2026-09-13",
  "has_data": true,
  "totals": {
-  "total": 977329156,
-  "compact": "977M",
-  "window_total": 977329156,
-  "window_compact": "977M",
-  "turns": 11431,
+  "total": 987843093,
+  "compact": "988M",
+  "window_total": 987843093,
+  "window_compact": "988M",
+  "turns": 11473,
   "active_days": 80,
   "sessions": 236,
-  "daily_average": 12216614,
-  "daily_average_compact": "12.2M"
+  "daily_average": 12348039,
+  "daily_average_compact": "12.3M"
  },
  "busiest": {
   "date": "2026-08-09",
@@ -26,6 +26,19 @@
  "streak": {
   "longest": 11,
   "current": 2
+ },
+ "remote": {
+  "claude_sessions": 10,
+  "claude_counted": 0,
+  "claude_tokens": 0,
+  "codex_threads": 269,
+  "codex_cloud_threads": 178,
+  "codex_ssh_threads": 91,
+  "codex_counted": 0,
+  "codex_tokens": 0,
+  "counted": 0,
+  "untracked": 279,
+  "complete": false
  },
  "thresholds": [
   2067899,
@@ -2804,8 +2817,8 @@
     {
      "date": "2026-09-13",
      "label": "Sep 13, 2026",
-     "total": 16890481,
-     "compact": "16.9M",
+     "total": 27404418,
+     "compact": "27.4M",
      "level": 4
     }
    ]
@@ -2868,11 +2881,11 @@
  "sources": [
   {
    "name": "Claude Code",
-   "total": 16327524,
-   "compact": "16.3M",
-   "turns": 120,
+   "total": 26841461,
+   "compact": "26.8M",
+   "turns": 162,
    "sessions": 1,
-   "share": 1.7
+   "share": 2.7
   },
   {
    "name": "Codex",
@@ -2880,7 +2893,7 @@
    "compact": "961M",
    "turns": 11311,
    "sessions": 235,
-   "share": 98.3
+   "share": 97.3
   }
  ]
 }

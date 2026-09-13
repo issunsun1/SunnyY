@@ -138,9 +138,13 @@ html[data-theme="dark"] {
 
   li {
     display: flex;
-    justify-content: space-between;
     gap: 8px;
     padding: 2px 0;
+  }
+
+  /* A fixed label column so the three values start on the same left edge. */
+  span {
+    flex: 0 0 64px;
   }
 
   b {

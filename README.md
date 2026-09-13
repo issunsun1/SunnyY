@@ -109,6 +109,36 @@ Counting differs per agent, which the script handles:
   the script takes the increase between consecutive `token_count` events, and
   starts a fresh cycle when a session restarts its counter.
 
+## Remote sessions
+
+Claude Code files an SSH session under `~/.claude/projects/ssh-<id>/` like any
+other, so remote Claude work is picked up by the normal scan. Codex is
+different: a thread opened on a remote host or in the cloud is catalogued here
+by title only, and the transcript holding its token counts stays on the machine
+that ran it. The script reports what it could not reach:
+
+```
+remote sessions:
+  Claude Code  10 SSH session(s), 0 with usage recorded here
+  Codex        269 remote thread(s) (178 cloud, 91 ssh), 0 with a transcript here
+```
+
+To fold that usage in, copy the remote transcripts down and point
+`--extra-source` at them:
+
+```bash
+rsync -a nyx:'~/.codex/sessions' ~/remote-transcripts/nyx/.codex/
+rsync -a nyx:'~/.claude/projects' ~/remote-transcripts/nyx/.claude/
+python3 scripts/token_usage.py --extra-source ~/remote-transcripts/nyx
+```
+
+`--extra-source` is repeatable, and each directory is scanned for both agents'
+transcripts. Sources may overlap safely: transcripts are de-duplicated by
+resolved path, by Claude Code message id, and by Codex session id, so passing a
+directory that is already being scanned does not double-count it. The counts
+that remain unreachable appear as `remote.untracked` in the JSON and as a
+closing sentence under the calendar.
+
 Useful flags: `--days` sets the size of the calendar window (default 365),
 `--tz` picks the timezone used to bucket days (default: this machine's), and
 `--claude-source` / `--codex-source` point at different transcript locations.
