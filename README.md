@@ -78,24 +78,40 @@ If you are using [Visual Studio Code](https://code.visualstudio.com/) you can us
 
 # Token usage heatmaps
 
-The sidebar carries a compact heatmap of local Claude Code token usage, and the
-front page carries a detailed breakdown below the Education section. Both read
-`_data/token_usage.json`, which is generated from the session transcripts Claude
-Code keeps under `~/.claude/projects/`:
+The sidebar carries a compact heatmap of local AI coding-agent token usage, and
+the front page carries headline figures plus a full-year calendar below the
+Education section. Both read `_data/token_usage.json`, which consolidates the
+transcripts two agents keep on this machine:
+
+| Agent | Transcripts |
+| --- | --- |
+| Claude Code | `~/.claude/projects/<project>/<session>.jsonl` |
+| Codex | `~/.codex/sessions/**/rollout-*.jsonl` and `~/.codex/archived_sessions/rollout-*.jsonl` |
+
+Regenerate the data with:
 
 ```bash
 python3 scripts/token_usage.py
 ```
 
-The script buckets every billed assistant turn by local calendar day and writes
-only aggregates - daily totals, token kinds, hour-of-day activity, and model
-names. Prompts, file paths, and project names are never written to the JSON, so
-nothing about what you were working on is published. Re-run it whenever you want
-the site to reflect recent usage, then commit the regenerated file.
+The script buckets every billed turn by local calendar day and merges both
+agents into a single series. Only aggregates are written - daily totals, active
+days, and per-agent session counts. Prompts, file paths, and project names are
+never written to the JSON, so nothing about what you were working on is
+published. Re-run it whenever you want the site to reflect recent usage, then
+commit the regenerated file.
+
+Counting differs per agent, which the script handles:
+
+- Claude Code repeats the same `usage` block on every content-block record of a
+  response, so turns are de-duplicated on message id.
+- Codex reports a running `total_token_usage` rather than a per-turn cost, so
+  the script takes the increase between consecutive `token_count` events, and
+  starts a fresh cycle when a session restarts its counter.
 
 Useful flags: `--days` sets the size of the calendar window (default 365),
 `--tz` picks the timezone used to bucket days (default: this machine's), and
-`--source` points at a different transcript directory.
+`--claude-source` / `--codex-source` point at different transcript locations.
 
 # Maintenance
 

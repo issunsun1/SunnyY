@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Aggregate local Claude Code token usage into _data/token_usage.json.
+"""Aggregate local AI coding-agent token usage into _data/token_usage.json.
 
-The Claude Code CLI keeps a JSONL transcript per session under
-~/.claude/projects/<project>/<session>.jsonl.  Every assistant record carries a
-`message.usage` block with the token counts billed for that turn.  This script
-walks those transcripts, buckets the counts by local calendar day, and writes a
-pre-laid-out JSON blob that the Jekyll templates render as a GitHub-style
-contribution heatmap.
+Two agents keep transcripts on this machine and both record what they billed:
+
+  Claude Code  ~/.claude/projects/<project>/<session>.jsonl
+               every assistant record carries a `message.usage` block.
+  Codex        ~/.codex/sessions/<y>/<m>/<d>/rollout-*.jsonl and
+               ~/.codex/archived_sessions/rollout-*.jsonl
+               `token_count` events carry a running `total_token_usage`.
+
+Both are walked, bucketed by local calendar day, and consolidated into a single
+series that the Jekyll templates render as a GitHub-style contribution heatmap.
 
 Only aggregate counts are written out - no prompts, file paths, or project
 names ever leave the local machine.
@@ -25,16 +29,16 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_SOURCE = Path.home() / ".claude" / "projects"
+DEFAULT_CLAUDE_SOURCE = Path.home() / ".claude" / "projects"
+DEFAULT_CODEX_SOURCE = Path.home() / ".codex"
 DEFAULT_OUTPUT = REPO_ROOT / "_data" / "token_usage.json"
 
-# The four token classes the API reports, in the order they are stacked in the
-# breakdown bar on the detailed view.
-TOKEN_KINDS = (
-    ("input", "input_tokens", "Input"),
-    ("output", "output_tokens", "Output"),
-    ("cache_creation", "cache_creation_input_tokens", "Cache write"),
-    ("cache_read", "cache_read_input_tokens", "Cache read"),
+# Claude Code reports each token class separately; the day total is their sum.
+CLAUDE_TOKEN_FIELDS = (
+    "input_tokens",
+    "output_tokens",
+    "cache_creation_input_tokens",
+    "cache_read_input_tokens",
 )
 
 WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -46,7 +50,7 @@ def parse_timestamp(raw, tz):
     """Parse an ISO-8601 UTC timestamp into a timezone-aware local datetime."""
     if not raw:
         return None
-    text = raw.replace("Z", "+00:00")
+    text = str(raw).replace("Z", "+00:00")
     try:
         stamp = datetime.fromisoformat(text)
     except ValueError:
@@ -56,50 +60,95 @@ def parse_timestamp(raw, tz):
     return stamp.astimezone(tz)
 
 
-def iter_usage_records(source, tz):
-    """Yield (local_datetime, model, counts) for every billed assistant turn."""
+def read_jsonl(path):
+    """Yield parsed records from a JSONL file, skipping anything malformed."""
+    try:
+        handle = path.open(encoding="utf-8", errors="replace")
+    except OSError:
+        return
+    with handle:
+        for line in handle:
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                yield json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+
+def iter_claude_usage(source, tz):
+    """Yield (local_datetime, tokens) for every billed Claude Code turn."""
     seen = set()
     for path in sorted(Path(source).rglob("*.jsonl")):
-        try:
-            handle = path.open(encoding="utf-8", errors="replace")
-        except OSError:
-            continue
-        with handle:
-            for line in handle:
-                line = line.strip()
-                if not line:
-                    continue
-                try:
-                    record = json.loads(line)
-                except json.JSONDecodeError:
-                    continue
-                message = record.get("message")
-                if not isinstance(message, dict):
-                    continue
-                usage = message.get("usage")
-                if not isinstance(usage, dict):
-                    continue
+        for record in read_jsonl(path):
+            message = record.get("message")
+            if not isinstance(message, dict):
+                continue
+            usage = message.get("usage")
+            if not isinstance(usage, dict):
+                continue
 
-                # A resumed or forked session replays earlier turns into a new
-                # transcript, so the same API response can appear more than
-                # once.  Key on the message id to count each turn exactly once.
-                key = (message.get("id"), record.get("requestId"))
-                if key != (None, None):
-                    if key in seen:
-                        continue
-                    seen.add(key)
-
-                stamp = parse_timestamp(record.get("timestamp"), tz)
-                if stamp is None:
+            # Claude Code writes one transcript record per content block, so a
+            # single API response repeats its usage object across several
+            # lines. Resumed sessions replay earlier turns too. Keying on the
+            # message id counts each response exactly once.
+            key = (message.get("id"), record.get("requestId"))
+            if key != (None, None):
+                if key in seen:
                     continue
+                seen.add(key)
 
-                counts = {name: int(usage.get(field) or 0)
-                          for name, field, _ in TOKEN_KINDS}
-                if not any(counts.values()):
-                    continue
+            stamp = parse_timestamp(record.get("timestamp"), tz)
+            if stamp is None:
+                continue
 
-                model = message.get("model") or "unknown"
-                yield stamp, model, counts
+            tokens = sum(int(usage.get(field) or 0) for field in CLAUDE_TOKEN_FIELDS)
+            if tokens > 0:
+                yield stamp, tokens, path
+
+
+def codex_transcripts(source):
+    source = Path(source)
+    paths = []
+    paths.extend(sorted((source / "sessions").rglob("rollout-*.jsonl")))
+    paths.extend(sorted((source / "archived_sessions").glob("rollout-*.jsonl")))
+    return paths
+
+
+def iter_codex_usage(source, tz):
+    """Yield (local_datetime, tokens) for every billed Codex turn.
+
+    `token_count` events carry the session's running total rather than the
+    turn's own cost, and the same total can be emitted more than once. Taking
+    the increase between consecutive events gives the per-turn spend and lands
+    on the session's final total exactly.
+    """
+    for path in codex_transcripts(source):
+        running = 0
+        for record in read_jsonl(path):
+            payload = record.get("payload")
+            if not isinstance(payload, dict) or payload.get("type") != "token_count":
+                continue
+            info = payload.get("info")
+            if not isinstance(info, dict):
+                continue
+            totals = info.get("total_token_usage")
+            if not isinstance(totals, dict):
+                continue
+
+            current = int(totals.get("total_tokens") or 0)
+            # A session that restarts its counter is treated as a fresh run
+            # rather than as a negative delta.
+            delta = current - running if current >= running else current
+            running = current
+            if delta <= 0:
+                continue
+
+            stamp = parse_timestamp(record.get("timestamp"), tz)
+            if stamp is None:
+                continue
+            yield stamp, delta, path
 
 
 def compact(value):
@@ -142,49 +191,63 @@ def level_for(value, cuts):
     return 4
 
 
-def longest_streak(daily, start, end):
+def streaks(daily, start, end):
     """Longest and current run of consecutive days with any usage."""
-    longest = current = running = 0
+    longest = running = 0
     day = start
     while day <= end:
-        if daily.get(day.isoformat(), {}).get("total", 0) > 0:
+        if daily.get(day.isoformat(), 0) > 0:
             running += 1
             longest = max(longest, running)
         else:
             running = 0
         day += timedelta(days=1)
-    current = running
-    return longest, current
+    return longest, running
 
 
-def build(source, days, tz, today):
-    daily = defaultdict(lambda: {name: 0 for name, _, _ in TOKEN_KINDS})
-    models = defaultdict(int)
-    hour_weekday = [[0] * 24 for _ in range(7)]
-    hourly = [0] * 24
-    totals = {name: 0 for name, _, _ in TOKEN_KINDS}
-    messages = 0
+def date_from(text):
+    return datetime.strptime(text, "%Y-%m-%d").date()
+
+
+def build(claude_source, codex_source, days, tz, today):
+    daily = defaultdict(int)
+    sources = []
+    total_turns = 0
+    total_sessions = 0
+    grand_total = 0
     first_seen = None
     last_seen = None
 
-    for stamp, model, counts in iter_usage_records(source, tz):
-        turn_total = sum(counts.values())
-        date_key = stamp.date().isoformat()
-        bucket = daily[date_key]
-        for name, value in counts.items():
-            bucket[name] += value
-            totals[name] += value
-        models[model] += turn_total
-        # Python's weekday() is Mon=0; the calendar grid is Sun-first.
-        row = (stamp.weekday() + 1) % 7
-        hour_weekday[row][stamp.hour] += turn_total
-        hourly[stamp.hour] += turn_total
-        messages += 1
-        first_seen = stamp if first_seen is None or stamp < first_seen else first_seen
-        last_seen = stamp if last_seen is None or stamp > last_seen else last_seen
+    readers = [("Claude Code", iter_claude_usage, claude_source),
+               ("Codex", iter_codex_usage, codex_source)]
 
-    for bucket in daily.values():
-        bucket["total"] = sum(bucket[name] for name, _, _ in TOKEN_KINDS)
+    for name, reader, source in readers:
+        if not source or not Path(source).exists():
+            continue
+        subtotal = turns = 0
+        files = set()
+        for stamp, tokens, path in reader(source, tz):
+            daily[stamp.date().isoformat()] += tokens
+            subtotal += tokens
+            turns += 1
+            files.add(path)
+            first_seen = stamp if first_seen is None or stamp < first_seen else first_seen
+            last_seen = stamp if last_seen is None or stamp > last_seen else last_seen
+        if subtotal <= 0:
+            continue
+        grand_total += subtotal
+        total_turns += turns
+        total_sessions += len(files)
+        sources.append({
+            "name": name,
+            "total": subtotal,
+            "compact": compact(subtotal),
+            "turns": turns,
+            "sessions": len(files),
+        })
+
+    for entry in sources:
+        entry["share"] = round(100.0 * entry["total"] / grand_total, 1) if grand_total else 0.0
 
     # The grid always ends on today and starts on a Sunday so the columns line
     # up as whole weeks.
@@ -192,10 +255,9 @@ def build(source, days, tz, today):
     span_start = end - timedelta(days=days - 1)
     start = span_start - timedelta(days=(span_start.weekday() + 1) % 7)
 
-    cuts = level_thresholds(
-        bucket["total"] for date_key, bucket in daily.items()
-        if start.isoformat() <= date_key <= end.isoformat()
-    )
+    in_window = {key: value for key, value in daily.items()
+                 if start.isoformat() <= key <= end.isoformat()}
+    cuts = level_thresholds(in_window.values())
 
     weeks = []
     month_labels = []
@@ -206,20 +268,14 @@ def build(source, days, tz, today):
         for _ in range(7):
             if day > end:
                 break
-            bucket = daily.get(day.isoformat())
-            total = bucket["total"] if bucket else 0
-            cell = {
+            total = daily.get(day.isoformat(), 0)
+            column["days"].append({
                 "date": day.isoformat(),
                 "label": day.strftime("%b %-d, %Y"),
-                "weekday": (day.weekday() + 1) % 7,
                 "total": total,
                 "compact": compact(total),
                 "level": level_for(total, cuts),
-            }
-            if bucket:
-                for name, _, _ in TOKEN_KINDS:
-                    cell[name] = bucket[name]
-            column["days"].append(cell)
+            })
             day += timedelta(days=1)
         # Label a column with its month when the month changes mid-grid.
         first_day = date_from(column["days"][0]["date"])
@@ -239,59 +295,10 @@ def build(source, days, tz, today):
             continue
         trimmed_labels.append(label)
 
-    in_window = {
-        date_key: bucket for date_key, bucket in daily.items()
-        if start.isoformat() <= date_key <= end.isoformat()
-    }
-    window_total = sum(bucket["total"] for bucket in in_window.values())
-    active_days = sum(1 for bucket in in_window.values() if bucket["total"] > 0)
-    busiest_key = max(in_window, key=lambda k: in_window[k]["total"], default=None)
-    longest, current = longest_streak(in_window, start, end)
-
-    grand_total = sum(totals.values())
-    by_type = []
-    for name, _, label in TOKEN_KINDS:
-        by_type.append({
-            "key": name.replace("_", "-"),
-            "label": label,
-            "total": totals[name],
-            "compact": compact(totals[name]),
-            "share": round(100.0 * totals[name] / grand_total, 1) if grand_total else 0.0,
-        })
-
-    model_rows = []
-    for name, value in sorted(models.items(), key=lambda kv: kv[1], reverse=True):
-        model_rows.append({
-            "name": name,
-            "total": value,
-            "compact": compact(value),
-            "share": round(100.0 * value / grand_total, 1) if grand_total else 0.0,
-        })
-
-    peak_hour = max(range(24), key=lambda h: hourly[h]) if any(hourly) else None
-    hour_peak = max(max(row) for row in hour_weekday) if any(hourly) else 0
-    clock = []
-    for hour in range(24):
-        clock.append({
-            "hour": hour,
-            "label": "{:02d}:00".format(hour),
-            "total": hourly[hour],
-            "compact": compact(hourly[hour]),
-            "share": round(100.0 * hourly[hour] / grand_total, 1) if grand_total else 0.0,
-        })
-
-    rhythm = []
-    for row in range(7):
-        cells = []
-        for hour in range(24):
-            value = hour_weekday[row][hour]
-            cells.append({
-                "hour": hour,
-                "total": value,
-                "compact": compact(value),
-                "level": 0 if value <= 0 else min(4, max(1, int(round(4.0 * value / hour_peak)))),
-            })
-        rhythm.append({"weekday": WEEKDAY_LABELS[row], "hours": cells})
+    window_total = sum(in_window.values())
+    active_days = sum(1 for value in in_window.values() if value > 0)
+    busiest_key = max(in_window, key=lambda k: in_window[k], default=None)
+    longest, current = streaks(in_window, start, end)
 
     return {
         "generated_at": datetime.now(tz).strftime("%Y-%m-%d %H:%M %Z").strip(),
@@ -307,32 +314,24 @@ def build(source, days, tz, today):
             "compact": compact(grand_total),
             "window_total": window_total,
             "window_compact": compact(window_total),
-            "messages": messages,
+            "turns": total_turns,
             "active_days": active_days,
-            "sessions": len(list(Path(source).rglob("*.jsonl"))) if Path(source).exists() else 0,
+            "sessions": total_sessions,
             "daily_average": int(round(window_total / active_days)) if active_days else 0,
             "daily_average_compact": compact(round(window_total / active_days)) if active_days else "0",
         },
         "busiest": {
             "date": busiest_key,
-            "total": in_window[busiest_key]["total"] if busiest_key else 0,
-            "compact": compact(in_window[busiest_key]["total"]) if busiest_key else "0",
+            "total": in_window[busiest_key] if busiest_key else 0,
+            "compact": compact(in_window[busiest_key]) if busiest_key else "0",
         },
         "streak": {"longest": longest, "current": current},
         "thresholds": cuts,
         "weekday_labels": WEEKDAY_LABELS,
         "weeks": weeks,
         "month_labels": trimmed_labels,
-        "by_type": by_type,
-        "models": model_rows,
-        "clock": clock,
-        "peak_hour": "{:02d}:00".format(peak_hour) if peak_hour is not None else None,
-        "rhythm": rhythm,
+        "sources": sources,
     }
-
-
-def date_from(text):
-    return datetime.strptime(text, "%Y-%m-%d").date()
 
 
 def resolve_tz(name):
@@ -351,9 +350,10 @@ def resolve_tz(name):
 def main():
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--source", default=str(DEFAULT_SOURCE),
-                        help="directory holding Claude Code session transcripts "
-                             "(default: %(default)s)")
+    parser.add_argument("--claude-source", default=str(DEFAULT_CLAUDE_SOURCE),
+                        help="Claude Code transcript directory (default: %(default)s)")
+    parser.add_argument("--codex-source", default=str(DEFAULT_CODEX_SOURCE),
+                        help="Codex home directory (default: %(default)s)")
     parser.add_argument("--output", default=str(DEFAULT_OUTPUT),
                         help="where to write the aggregated JSON (default: %(default)s)")
     parser.add_argument("--days", type=int, default=365,
@@ -362,12 +362,14 @@ def main():
                         help="IANA timezone for day bucketing (default: this machine's)")
     args = parser.parse_args()
 
-    source = Path(os.path.expanduser(args.source))
-    if not source.exists():
-        sys.exit("no Claude Code transcripts at {}".format(source))
+    claude_source = Path(os.path.expanduser(args.claude_source))
+    codex_source = Path(os.path.expanduser(args.codex_source))
+    if not claude_source.exists() and not codex_source.exists():
+        sys.exit("no transcripts found at {} or {}".format(claude_source, codex_source))
 
     tz = resolve_tz(args.tz)
-    payload = build(source, max(7, args.days), tz, datetime.now(tz).date())
+    payload = build(claude_source, codex_source, max(7, args.days), tz,
+                    datetime.now(tz).date())
 
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -376,10 +378,11 @@ def main():
         handle.write("\n")
 
     print("wrote {}".format(output))
-    print("  {} tokens over {} active day(s), {} turns".format(
-        payload["totals"]["compact"],
-        payload["totals"]["active_days"],
-        payload["totals"]["messages"]))
+    for entry in payload["sources"]:
+        print("  {:<12} {:>8} over {} session(s)".format(
+            entry["name"], entry["compact"], entry["sessions"]))
+    print("  {:<12} {:>8} over {} active day(s)".format(
+        "combined", payload["totals"]["compact"], payload["totals"]["active_days"]))
 
 
 if __name__ == "__main__":

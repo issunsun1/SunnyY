@@ -149,10 +149,6 @@ html[data-theme="dark"] {
   }
 }
 
-.tk-summary__link {
-  font-size: $type-size-8;
-}
-
 /* --------------------------------------------------------------------------
    Detailed panel
    -------------------------------------------------------------------------- */
@@ -321,170 +317,16 @@ html[data-theme="dark"] {
 
 /* A centred tooltip on a cell near either end would spill past the scroller
    and drag a scrollbar into view, so the outer columns anchor inwards. */
-.tk-calendar .tk-week:nth-child(-n+12) .tk-day[data-tip]:hover::after,
-.tk-rhythm__row .tk-day:nth-child(-n+11)[data-tip]:hover::after {
+.tk-calendar .tk-week:nth-child(-n+12) .tk-day[data-tip]:hover::after {
   left: 0;
   right: auto;
   transform: none;
 }
 
-.tk-calendar .tk-week:nth-last-child(-n+12) .tk-day[data-tip]:hover::after,
-.tk-rhythm__row .tk-day:nth-last-child(-n+10)[data-tip]:hover::after {
+.tk-calendar .tk-week:nth-last-child(-n+12) .tk-day[data-tip]:hover::after {
   left: auto;
   right: 0;
   transform: none;
-}
-
-/* --------------------------------------------------------------------------
-   Token mix bar
-   -------------------------------------------------------------------------- */
-
-.tk-mix {
-  display: flex;
-  width: 100%;
-  height: 16px;
-  margin-bottom: 10px;
-  border-radius: 3px;
-  overflow: hidden;
-  background: var(--tk-empty);
-}
-
-.tk-mix__part {
-  height: 100%;
-  min-width: 1px;
-
-  &--input          { background-color: var(--tk-1); }
-  &--output         { background-color: var(--tk-2); }
-  &--cache-creation { background-color: var(--tk-3); }
-  &--cache-read     { background-color: var(--tk-4); }
-}
-
-.tk-keys {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 18px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: $type-size-7;
-  color: var(--global-text-color-light);
-
-  li {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-  }
-
-  b {
-    color: var(--global-text-color);
-    font-weight: bold;
-  }
-}
-
-.tk-swatch {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  flex: 0 0 10px;
-  background: var(--tk-empty);
-
-  &--input          { background-color: var(--tk-1); }
-  &--output         { background-color: var(--tk-2); }
-  &--cache-creation { background-color: var(--tk-3); }
-  &--cache-read     { background-color: var(--tk-4); }
-}
-
-/* --------------------------------------------------------------------------
-   Hour-of-day rhythm grid
-   -------------------------------------------------------------------------- */
-
-.tk-rhythm {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: min-content;
-}
-
-.tk-rhythm__row {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-
-  .tk-day {
-    width: 15px;
-    height: 12px;
-  }
-}
-
-.tk-rhythm__label {
-  width: 30px;
-  flex: 0 0 30px;
-  font-size: $type-size-8;
-  color: var(--global-text-color-light);
-}
-
-.tk-rhythm__hours {
-  display: flex;
-  gap: 3px;
-  padding-left: 33px;
-  font-size: $type-size-8;
-  color: var(--global-text-color-light);
-
-  span {
-    width: 15px;
-    flex: 0 0 15px;
-    text-align: center;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Models table and footnote
-   -------------------------------------------------------------------------- */
-
-.tk-models {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  font-size: $type-size-7;
-
-  li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 4px 0;
-    border-bottom: 1px solid var(--global-border-color);
-  }
-
-  li:last-child {
-    border-bottom: 0;
-  }
-}
-
-.tk-models__name {
-  flex: 0 0 auto;
-  font-family: $monospace;
-  font-size: $type-size-8;
-  color: var(--global-text-color);
-}
-
-.tk-models__bar {
-  flex: 1 1 auto;
-  height: 8px;
-  border-radius: 3px;
-  background: var(--tk-empty);
-
-  span {
-    display: block;
-    height: 100%;
-    border-radius: 3px;
-    background: var(--tk-3);
-  }
-}
-
-.tk-models__value {
-  flex: 0 0 auto;
-  color: var(--global-text-color-light);
 }
 
 .tk-note {
