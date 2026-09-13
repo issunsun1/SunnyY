@@ -76,6 +76,27 @@ You should now be able to access the website from `localhost:4000`.
 
 If you are using [Visual Studio Code](https://code.visualstudio.com/) you can use the [Dev Container](https://code.visualstudio.com/docs/devcontainers/containers) that comes with this Repository. Normally VS Code detects that a development container configuration is available and asks you if you want to use the container. If this doesn't happen you can manually start the container by **F1->DevContainer: Reopen in Container**. This restarts your VS Code in the container and automatically hosts your academic page locally on http://localhost:4000. All changes will be updated live to that page after a few seconds.
 
+# Token usage heatmaps
+
+The sidebar carries a compact heatmap of local Claude Code token usage, and the
+front page carries a detailed breakdown below the Education section. Both read
+`_data/token_usage.json`, which is generated from the session transcripts Claude
+Code keeps under `~/.claude/projects/`:
+
+```bash
+python3 scripts/token_usage.py
+```
+
+The script buckets every billed assistant turn by local calendar day and writes
+only aggregates - daily totals, token kinds, hour-of-day activity, and model
+names. Prompts, file paths, and project names are never written to the JSON, so
+nothing about what you were working on is published. Re-run it whenever you want
+the site to reflect recent usage, then commit the regenerated file.
+
+Useful flags: `--days` sets the size of the calendar window (default 365),
+`--tz` picks the timezone used to bucket days (default: this machine's), and
+`--source` points at a different transcript directory.
+
 # Maintenance
 
 Bug reports and feature requests to the template should be [submitted via GitHub](https://github.com/academicpages/academicpages.github.io/issues/new/choose). For questions concerning how to style the template, please feel free to start a [new discussion on GitHub](https://github.com/academicpages/academicpages.github.io/discussions).

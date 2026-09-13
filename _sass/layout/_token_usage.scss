@@ -1,0 +1,494 @@
+/* ==========================================================================
+   TOKEN USAGE HEATMAPS
+   Shared styles for the sidebar summary and the detailed homepage panel.
+   ========================================================================== */
+
+/* The shade ramp is mixed from the active theme's accent against its own
+   background, so the heatmap follows every site theme and the dark toggle
+   without a second palette. The literal values below are the fallback for
+   browsers without color-mix(). */
+:root {
+  --tk-empty : var(--global-border-color);
+  --tk-1     : #cfe1e7;
+  --tk-2     : #9fc4d0;
+  --tk-3     : #67a3b5;
+  --tk-4     : var(--global-base-color);
+}
+
+/* The dark themes use a light grey for borders, which would turn a year of
+   empty days into a wall of bright squares - the blank grid gets its own
+   muted tone instead. */
+html[data-theme="dark"] {
+  --tk-empty : #2f3337;
+  --tk-1     : #274b55;
+  --tk-2     : #356a78;
+  --tk-3     : #44899b;
+  --tk-4     : var(--global-base-color);
+}
+
+@supports (color: #{"color-mix(in srgb, red 50%, blue)"}) {
+  :root,
+  html[data-theme="dark"] {
+    --tk-1 : #{"color-mix(in srgb, var(--global-base-color) 22%, var(--global-bg-color))"};
+    --tk-2 : #{"color-mix(in srgb, var(--global-base-color) 46%, var(--global-bg-color))"};
+    --tk-3 : #{"color-mix(in srgb, var(--global-base-color) 70%, var(--global-bg-color))"};
+    --tk-4 : var(--global-base-color);
+  }
+
+  html[data-theme="dark"] {
+    --tk-empty : #{"color-mix(in srgb, var(--global-border-color) 20%, var(--global-bg-color))"};
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Shared grid primitives
+   -------------------------------------------------------------------------- */
+
+.tk-grid {
+  display: flex;
+  gap: 3px;
+}
+
+.tk-week {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.tk-day {
+  position: relative;
+  border-radius: 2px;
+  background-color: var(--tk-empty);
+
+  &--l1 { background-color: var(--tk-1); }
+  &--l2 { background-color: var(--tk-2); }
+  &--l3 { background-color: var(--tk-3); }
+  &--l4 { background-color: var(--tk-4); }
+}
+
+.tk-legend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+
+  .tk-day {
+    width: 10px;
+    height: 10px;
+    flex: 0 0 auto;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Sidebar summary
+   -------------------------------------------------------------------------- */
+
+.tk-summary {
+  display: none; /* The sidebar collapses to a name strip on small screens. */
+  font-family: $sans-serif;
+
+  @include breakpoint($large) {
+    display: block;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid var(--global-border-color);
+  }
+
+  .tk-day {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+.tk-summary__title {
+  margin: 0 0 2px;
+  font-size: $type-size-7;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--global-text-color-light);
+}
+
+.tk-summary__total {
+  margin: 0 0 10px;
+  font-size: $type-size-4;
+  line-height: 1.1;
+  color: var(--global-text-color);
+
+  small {
+    display: block;
+    font-size: $type-size-8;
+    font-weight: normal;
+    color: var(--global-text-color-light);
+  }
+}
+
+.tk-summary__grid {
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.tk-summary__facts {
+  margin: 0 0 8px;
+  padding: 0;
+  list-style: none;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 2px 0;
+  }
+
+  b {
+    color: var(--global-text-color);
+    font-weight: bold;
+  }
+}
+
+.tk-summary__link {
+  font-size: $type-size-8;
+}
+
+/* --------------------------------------------------------------------------
+   Detailed panel
+   -------------------------------------------------------------------------- */
+
+.tk-panel {
+  margin: 1.5em 0 2em;
+  font-family: $sans-serif;
+}
+
+.tk-panel__intro {
+  margin: 0 0 1.2em;
+  font-size: $type-size-6;
+  color: var(--global-text-color-light);
+}
+
+.tk-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 1.6em;
+
+  @include breakpoint($medium) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.tk-stat {
+  padding: 10px 12px;
+  border: 1px solid var(--global-border-color);
+  border-radius: 4px;
+
+  dt {
+    margin: 0 0 2px;
+    font-size: $type-size-8;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--global-text-color-light);
+  }
+
+  dd {
+    margin: 0;
+    font-size: $type-size-4;
+    line-height: 1.2;
+    color: var(--global-text-color);
+  }
+
+  dd small {
+    display: block;
+    font-size: $type-size-8;
+    color: var(--global-text-color-light);
+  }
+}
+
+.tk-section {
+  margin-bottom: 1.8em;
+}
+
+.tk-section__head {
+  margin: 0 0 0.6em;
+  font-size: $type-size-6;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--global-text-color-light);
+}
+
+/* The calendar is wider than the content column on narrow screens, so it gets
+   its own scroller. The top padding keeps hover tooltips from being clipped. */
+.tk-scroll {
+  overflow-x: auto;
+  padding: 26px 0 4px;
+  margin-top: -26px;
+}
+
+.tk-calendar {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: min-content;
+
+  .tk-grid,
+  .tk-week {
+    gap: 2px;
+  }
+
+  .tk-day {
+    width: 10px;
+    height: 10px;
+  }
+}
+
+.tk-calendar__months {
+  display: flex;
+  gap: 2px;
+  padding-left: 24px;
+  height: 13px;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+}
+
+.tk-calendar__month {
+  position: relative;
+  width: 10px;
+  flex: 0 0 10px;
+
+  span {
+    position: absolute;
+    left: 0;
+    white-space: nowrap;
+  }
+}
+
+.tk-calendar__body {
+  display: flex;
+  gap: 4px;
+}
+
+.tk-calendar__weekdays {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 20px;
+  flex: 0 0 20px;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+
+  span {
+    height: 10px;
+    line-height: 10px;
+  }
+}
+
+.tk-calendar__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-left: 24px;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+}
+
+/* CSS-only tooltip; it lives inside the scroller's padding so nothing clips. */
+.tk-day[data-tip]:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: var(--global-text-color);
+  color: var(--global-bg-color);
+  font-size: $type-size-8;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tk-day[data-tip]:hover {
+  outline: 1px solid var(--global-text-color-light);
+  outline-offset: 1px;
+}
+
+/* A centred tooltip on a cell near either end would spill past the scroller
+   and drag a scrollbar into view, so the outer columns anchor inwards. */
+.tk-calendar .tk-week:nth-child(-n+12) .tk-day[data-tip]:hover::after,
+.tk-rhythm__row .tk-day:nth-child(-n+11)[data-tip]:hover::after {
+  left: 0;
+  right: auto;
+  transform: none;
+}
+
+.tk-calendar .tk-week:nth-last-child(-n+12) .tk-day[data-tip]:hover::after,
+.tk-rhythm__row .tk-day:nth-last-child(-n+10)[data-tip]:hover::after {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+   Token mix bar
+   -------------------------------------------------------------------------- */
+
+.tk-mix {
+  display: flex;
+  width: 100%;
+  height: 16px;
+  margin-bottom: 10px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--tk-empty);
+}
+
+.tk-mix__part {
+  height: 100%;
+  min-width: 1px;
+
+  &--input          { background-color: var(--tk-1); }
+  &--output         { background-color: var(--tk-2); }
+  &--cache-creation { background-color: var(--tk-3); }
+  &--cache-read     { background-color: var(--tk-4); }
+}
+
+.tk-keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: $type-size-7;
+  color: var(--global-text-color-light);
+
+  li {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  b {
+    color: var(--global-text-color);
+    font-weight: bold;
+  }
+}
+
+.tk-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex: 0 0 10px;
+  background: var(--tk-empty);
+
+  &--input          { background-color: var(--tk-1); }
+  &--output         { background-color: var(--tk-2); }
+  &--cache-creation { background-color: var(--tk-3); }
+  &--cache-read     { background-color: var(--tk-4); }
+}
+
+/* --------------------------------------------------------------------------
+   Hour-of-day rhythm grid
+   -------------------------------------------------------------------------- */
+
+.tk-rhythm {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: min-content;
+}
+
+.tk-rhythm__row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+
+  .tk-day {
+    width: 15px;
+    height: 12px;
+  }
+}
+
+.tk-rhythm__label {
+  width: 30px;
+  flex: 0 0 30px;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+}
+
+.tk-rhythm__hours {
+  display: flex;
+  gap: 3px;
+  padding-left: 33px;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+
+  span {
+    width: 15px;
+    flex: 0 0 15px;
+    text-align: center;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Models table and footnote
+   -------------------------------------------------------------------------- */
+
+.tk-models {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: $type-size-7;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--global-border-color);
+  }
+
+  li:last-child {
+    border-bottom: 0;
+  }
+}
+
+.tk-models__name {
+  flex: 0 0 auto;
+  font-family: $monospace;
+  font-size: $type-size-8;
+  color: var(--global-text-color);
+}
+
+.tk-models__bar {
+  flex: 1 1 auto;
+  height: 8px;
+  border-radius: 3px;
+  background: var(--tk-empty);
+
+  span {
+    display: block;
+    height: 100%;
+    border-radius: 3px;
+    background: var(--tk-3);
+  }
+}
+
+.tk-models__value {
+  flex: 0 0 auto;
+  color: var(--global-text-color-light);
+}
+
+.tk-note {
+  margin: 0;
+  font-size: $type-size-8;
+  color: var(--global-text-color-light);
+}
