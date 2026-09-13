@@ -10,7 +10,7 @@ redirect_from:
 
 {% include base_path %}
 
-Hi, I'm Sun Yi, a first-year master's student at the School of Artificial Intelligence and Computer Science, Jiangnan University.
+Hi, I'm Sun Yi, a second-year master's student at the School of Artificial Intelligence and Computer Science, Jiangnan University.
 
 My supervisor is Associate Professor Tianyang Xu.
 [![Google Scholar](https://img.shields.io/badge/Google%20Scholar-Tianyang%20Xu-4285F4?logo=google-scholar&logoColor=white)](https://scholar.google.com/citations?hl=en&user=bbSNrAgAAAAJ)
