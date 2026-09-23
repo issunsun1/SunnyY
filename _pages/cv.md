@@ -21,6 +21,7 @@ I am interested in artificial intelligence and computer science, especially mult
 Research Interests
 ======
 * Multimodal Large Language Models (MLLMs)
+* Tool-use Agentic Framework on VQA
 * Vision-Language Models (VLMs)
 * Position Encoding
 * Visual Question Answering (VQA)
